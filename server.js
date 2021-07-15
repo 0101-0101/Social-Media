@@ -1,16 +1,23 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const connectDB = require('./config/db')
+
+// connect dotenv
+require('dotenv').config({
+    path: './config/config.env'
+})
+
 
 const app = express()
 
 // Parse request body to Json
 app.use(express.json())
 
-// connect dotenv
-require('dotenv').config({
-    path: './config/config.env'
-})
+
+
+connectDB();
+
 
 app.use(cors());
 
