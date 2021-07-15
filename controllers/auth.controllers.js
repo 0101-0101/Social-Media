@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator')
 const nodemailer = require('nodemailer');
+const _ = require('lodash');
+
 
 const { errorHandler } = require('../helpers/dbErrorHandling');
 
@@ -125,5 +127,210 @@ exports.activationController = (req, res) => {
       return res.json({
         message: 'error happening please try again'
       });
+    }
+  };
+
+  exports.signinController = (req, res) => {
+    const { email, password } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const firstError = errors.array().map(error => error.msg)[0];
+      return res.status(422).json({
+        errors: firstError
+      });
+    } else {
+      // check if user exist
+      User.findOne({
+        email
+      }).exec((err, user) => {
+        if (err || !user) {
+          return res.status(400).json({
+            errors: 'User with that email does not exist. Please signup'
+          });
+        }
+        // authenticate
+        if (!user.authenticate(password)) {
+          return res.status(400).json({
+            errors: 'Email and password do not match'
+          });
+        }
+        // generate a token and send to client
+        const token = jwt.sign(
+          {
+            _id: user._id
+          },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: '7d'
+          }
+        );
+        const { _id, name, email, role } = user;
+  
+        return res.json({
+          token,
+          user: {
+            _id,
+            name,
+            email,
+            role
+          }
+        });
+      });
+    }
+  };
+
+  exports.forgotPasswordController = (req, res) => {
+    const { email } = req.body;
+    const errors = validationResult(req);
+  
+    if (!errors.isEmpty()) {
+      const firstError = errors.array().map(error => error.msg)[0];
+      return res.status(422).json({
+        errors: firstError
+      });
+    } else {
+      User.findOne(
+        {
+          email
+        },
+        (err, user) => {
+          if (err || !user) {
+            return res.status(400).json({
+              error: 'User with that email does not exist'
+            });
+          }
+  
+          const token = jwt.sign(
+            {
+              _id: user._id
+            },
+            process.env.JWT_RESET_PASSWORD,
+            {
+              expiresIn: '10m'
+            }
+          );
+
+          var emailData = {
+            from: process.env.YOUR_GMAIL_ADDRESS,
+            to: email,
+            subject: `Password Reset link`,
+            // text: req.body.message,
+            html: `
+                      <h1>Please use the following link to reset your password</h1>
+                      <p>${process.env.CLIENT_URL}/users/password/reset/${token}</p>
+                      <hr />
+                      <p>This email may contain sensetive information</p>
+                      <p>${process.env.CLIENT_URL}</p>
+                  `
+        };
+
+          var auth = {
+            type: 'oauth2',
+            user: process.env.YOUR_GMAIL_ADDRESS,
+            clientId: process.env.YOUR_CLIENT_ID,
+            clientSecret: process.env.YOUR_CLIENT_SECRET,
+            refreshToken: process.env.YOUR_REFRESH_TOKEN,
+        };
+  
+          return user.updateOne(
+            {
+              resetPasswordLink: token
+            },
+            (err, success) => {
+              if (err) {
+                console.log('RESET PASSWORD LINK ERROR', err);
+                return res.status(400).json({
+                  error:
+                    'Database connection error on user password forgot request'
+                });
+              } else {
+
+              var transporter = nodemailer.createTransport({
+                  service: 'gmail',
+                  auth: auth,
+              });
+          
+              transporter.sendMail(emailData, (err, res) => {
+                  if (err) {
+                      console.log(err);
+                      return res.json({
+                        message: err.message
+                      });
+                  } else {
+                      console.log(JSON.stringify(res));
+                      return res.json({
+                        message: `Email has been sent to ${email}. Follow the instruction to activate your account`
+                      });
+                  }
+              });
+
+              }
+            }
+          );
+        }
+      );
+    }
+  };
+  
+  exports.resetPasswordController = (req, res) => {
+    const { resetPasswordLink, newPassword } = req.body;
+    console.log(resetPasswordLink, newPassword);
+    const errors = validationResult(req);
+  
+    if (!errors.isEmpty()) {
+      const firstError = errors.array().map(error => error.msg)[0];
+      return res.status(422).json({
+        errors: firstError
+      });
+    } else {
+      if (resetPasswordLink) {
+        jwt.verify(resetPasswordLink, process.env.JWT_RESET_PASSWORD, function(
+          err,
+          decoded
+        ) {
+          if (err) {
+            return res.status(400).json({
+              error: 'Expired link. Try again'
+            });
+          }
+          
+          console.log("user", User.findOne(
+            {
+              resetPasswordLink
+            })
+          )
+
+          User.findOne(
+            {
+              resetPasswordLink
+            },
+            (err, user) => {
+              if (err || !user) {
+                return res.status(400).json({
+                  error: 'Something went wrong. Try later'
+                });
+              }
+  
+              const updatedFields = {
+                password: newPassword,
+                resetPasswordLink: ''
+              };
+              console.log("Before Loadas:",user);
+              user = _.extend(user, updatedFields);
+              console.log("After Loadas",user);
+              user.save((err, result) => {
+                if (err) {
+                  return res.status(400).json({
+                    error: 'Error resetting user password'
+                  });
+                }
+                res.json({
+                  message: `Great! Now you can login with your new password`
+                });
+              });
+            }
+          );
+        });
+      }
     }
   };
