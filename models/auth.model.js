@@ -29,7 +29,12 @@ const userSchema = new mongoose.Schema(
     resetPasswordLink:{
         data: String,
         default: ''
-    }
+    },
+    photo:{
+        type : String
+    },
+    following: [{type: mongoose.Schema.ObjectId, ref: 'User'}],
+    followers: [{type: mongoose.Schema.ObjectId, ref: 'User'}]
 },
     {
         timestamps: true

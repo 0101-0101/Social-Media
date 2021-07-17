@@ -15,6 +15,8 @@ const app = express()
 app.use(express.json())
 
 
+const path = require("path");
+app.use(express.static(path.join(__dirname, '/')))  
 
 connectDB();
 
@@ -35,9 +37,12 @@ if (process.env.NODE_ENV === 'development'){
 
 // Load all Routes
 const authRouter = require('./routes/auth.route')
+const postRouter = require('./routes/post.route')
 
 // Use Routes
 app.use('/api/',authRouter)
+// app.use('/api/users/', userRouter)
+app.use('/post/',postRouter)
 
 
 app.use((req,res) => {
