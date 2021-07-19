@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const crypto = require('crypto')
 
 
+
 const postSchema = new mongoose.Schema({
     text:{
         type:String,

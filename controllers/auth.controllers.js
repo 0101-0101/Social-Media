@@ -10,7 +10,7 @@ const { errorHandler } = require('../helpers/dbErrorHandling');
 
 
 
-const User = require('../models/auth.model')
+const User = require('../models/user.model')
 
 
 
@@ -33,6 +33,27 @@ exports.registerController = (req,res) => {
                 })
             }
         });
+
+        // const user = new User({
+        //   name,
+        //   email,
+        //   password
+        // })
+
+        // user.save((err, user) => {
+        //   if (err) {
+        //     console.log('Save error', errorHandler(err));
+        //     return res.status(401).json({
+        //       errors: errorHandler(err)
+        //     });
+        //   } else {
+        //     return res.json({
+        //       success: true,
+        //       message: user,
+        //       message: 'Signup success'
+        //     });
+        //   }
+        // });
 
         const token = jwt.sign(
             {

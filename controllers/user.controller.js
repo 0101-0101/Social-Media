@@ -1,26 +1,12 @@
-import User from '../models/user.model'
-import _ from 'lodash'
-import errorHandler from '../helpers/dbErrorHandling'
+const User = require('../models/user.model')
+// import _ from 'lodash'
+// import errorHandler from '../helpers/dbErrorHandling'
 
-
-const create = (req, res, next) => {
-  const user = new User(req.body)
-  user.save((err, result) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler.getErrorMessage(err)
-      })
-    }
-    res.status(200).json({
-      message: "Successfully signed up!"
-    })
-  })
-}
 
 /**
  * Load user and append to req.
  */
-const userByID = (req, res, next, id) => {
+exports.userByID = (req, res, next, id) => {
   User.findById(id).exec((err, user) => {
     if (err || !user)
       return res.status('400').json({
@@ -31,58 +17,73 @@ const userByID = (req, res, next, id) => {
   })
 }
 
-const read = (req, res) => {
-  req.profile.hashed_password = undefined
-  req.profile.salt = undefined
-  return res.json(req.profile)
+exports.list = (req, res) => {
+    // const val= User.find({},{'name':1})
+    const val = User.find({}).select('name')
+    // const val= users.find({"name":true})
+
+    val.exec(function (err, someValue) {
+      if (err) return next(err);
+      console.log("values",someValue)
+      res.send(someValue);
+  });  
+    // res.json(val)
 }
 
-const list = (req, res) => {
-  User.find((err, users) => {
+
+
+exports.addFollowing = (req, res, next) => {
+  User.findByIdAndUpdate(req.body.userId, {$push: {following: req.body.followId}}, (err, result) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler.getErrorMessage(err)
       })
     }
-    res.json(users)
-  }).select('name email updated created')
-}
-
-const update = (req, res, next) => {
-  let user = req.profile
-  user = _.extend(user, req.body)
-  user.updated = Date.now()
-  user.save((err) => {
-    if (err) {
-      return res.status(400).json({
-        error: errhashed_passwordorHandler.getErrorMessage(err)
-      })
-    }
-    user.hashed_password = undefined
-    user.salt = undefined
-    res.json(user)
+    next()
   })
 }
 
-const remove = (req, res, next) => {
-  let user = req.profile
-  user.remove((err, deletedUser) => {
+exports.addFollower = (req, res) => {
+  User.findByIdAndUpdate(req.body.followId, {$push: {followers: req.body.userId}}, {new: true})
+  .populate('following', '_id name')
+  .populate('followers', '_id name')
+  .exec((err, result) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler.getErrorMessage(err)
       })
     }
-    deletedUser.hashed_password = undefined
-    deletedUser.salt = undefined
-    res.json(deletedUser)
+    result.hashed_password = undefined
+    result.salt = undefined
+    res.json(result)
   })
 }
 
-export default {
-  create,
-  userByID,
-  read,
-  list,
-  remove,
-  update
+const removeFollowing = (req, res, next) => {
+  User.findByIdAndUpdate(req.body.userId, {$pull: {following: req.body.unfollowId}}, (err, result) => {
+    if (err) {
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+    next()
+  })
 }
+const removeFollower = (req, res) => {
+  User.findByIdAndUpdate(req.body.unfollowId, {$pull: {followers: req.body.userId}}, {new: true})
+  .populate('following', '_id name')
+  .populate('followers', '_id name')
+  .exec((err, result) => {
+    if (err) {
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+    result.hashed_password = undefined
+    result.salt = undefined
+    res.json(result)
+  })
+}
+
+
+

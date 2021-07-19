@@ -38,12 +38,13 @@ if (process.env.NODE_ENV === 'development'){
 // Load all Routes
 const authRouter = require('./routes/auth.route')
 const postRouter = require('./routes/post.route')
+const userRouter = require('./routes/user.route')
 
 // Use Routes
 app.use('/api/',authRouter)
 // app.use('/api/users/', userRouter)
 app.use('/post/',postRouter)
-
+app.use('/',userRouter)
 
 app.use((req,res) => {
     res.status(404).json({
