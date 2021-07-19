@@ -20,7 +20,7 @@
       }
   }
 
-  exports.get_post  = async (req,res) =>{
+  exports.get_post  = async (req,res) => {
     try{
         let prod = await Post.find()
         // console.log("Product",prod);
@@ -36,5 +36,51 @@
 }
 }
 
+exports.addFollower = (req, res) => {
+    User.findByIdAndUpdate(req.body.followId, {$push: {followers: req.body.userId}}, {new: true})
+    .populate('following', '_id name')
+    .populate('followers', '_id name')
+    .exec((err, result) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler.getErrorMessage(err)
+        })
+      }
+      result.hashed_password = undefined
+      result.salt = undefined
+      res.json(result)
+    })
+  }
 
+exports.comment = (req, res) => {
+    console.log("res",req.body);
 
+    let comment =   {}
+    comment.text =req.body.comment
+    comment.postedBy = req.body.userId
+    console.log(comment,comment.postedBy);
+    Post.findByIdAndUpdate(req.body.postId, {$push: {comments: comment}}, {new: true})
+    .populate('comments.postedBy', '_id name')
+    .populate('postedBy', '_id name')
+    .exec((err, result) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler.getErrorMessage(err)
+        })
+      }
+      res.json(result)
+    })
+  }
+
+  
+exports.like = (req, res) => {
+    Post.findByIdAndUpdate(req.body.postId, {$push: {likes: req.body.userId}}, {new: true})
+    .exec((err, result) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler.getErrorMessage(err)
+        })
+      }
+      res.json(result)
+    })
+  }

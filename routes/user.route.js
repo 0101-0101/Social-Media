@@ -23,6 +23,7 @@ const {list ,addFollowing, addFollower} =require('../controllers/user.controller
 
 router.get('/api/users',list)
 router.put('/api/users/follow', addFollowing, addFollower)
+
 // router.put('/api/users/unfollow',removeFollowing, removeFollower)
 
 

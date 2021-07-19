@@ -43,7 +43,7 @@ const userRouter = require('./routes/user.route')
 // Use Routes
 app.use('/api/',authRouter)
 // app.use('/api/users/', userRouter)
-app.use('/post/',postRouter)
+app.use('/',postRouter)
 app.use('/',userRouter)
 
 app.use((req,res) => {
