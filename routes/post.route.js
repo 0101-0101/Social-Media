@@ -28,6 +28,7 @@ router.get('/api/posts/upload', get_post )
 
 router.put('/api/posts/like',like)
 router.put('/api/posts/comment',comment)
+// router.put('/api/posts/uncomment',uncomment)
 router.get('/api/posts/by/:userId',listByUser)
 
 // router.put('/api/posts/like', postCtrl.like)
