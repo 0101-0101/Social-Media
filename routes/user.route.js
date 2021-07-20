@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router()
 
-const {list ,addFollowing, addFollower} =require('../controllers/user.controller')
+const {list ,addFollowing, addFollower,
+        userByID,read} =require('../controllers/user.controller')
 
 // import userCtrl from '../controllers/user.controller'
 // import authCtrl from '../controllers/auth.controller'
@@ -24,7 +25,11 @@ const {list ,addFollowing, addFollower} =require('../controllers/user.controller
 router.get('/api/users',list)
 router.put('/api/users/follow', addFollowing, addFollower)
 
+router.get('/api/users/:userId',read)
+
 // router.put('/api/users/unfollow',removeFollowing, removeFollower)
+
+router.param('userId', userByID)
 
 
 module.exports = router
