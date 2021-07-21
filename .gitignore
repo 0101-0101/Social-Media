@@ -4,6 +4,7 @@
 /node_modules
 /client/node_modules
 /public/photos
+/socket/node_modules
 /.pnp
 .pnp.js
 
