@@ -39,12 +39,17 @@ if (process.env.NODE_ENV === 'development'){
 const authRouter = require('./routes/auth.route')
 const postRouter = require('./routes/post.route')
 const userRouter = require('./routes/user.route')
+const conversationRoute = require("./routes/conversations.route.");
+const messageRoute = require("./routes/messages.route");
 
 // Use Routes
 app.use('/api/',authRouter)
 // app.use('/api/users/', userRouter)
 app.use('/',postRouter)
 app.use('/',userRouter)
+app.use("/api/conversations", conversationRoute);
+app.use("/api/messages", messageRoute);
+
 
 app.use((req,res) => {
     res.status(404).json({
