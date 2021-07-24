@@ -1,6 +1,7 @@
 import React from 'react'
 
-function ChatOnline() {
+function ChatOnline( { onlineUsers, currentId, setCurrentChat } ) {
+  
     return (
         <div className="chatOnline">
           <div className="chatOnlineFriend">

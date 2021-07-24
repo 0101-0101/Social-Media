@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+
   },
   inputRoot: {
     color: 'inherit',
@@ -123,21 +124,21 @@ export default function PrimarySearchAppBar() {
 
   
   return (
-    <div className={classes.grow}>
-      <AppBar position="static">
+    <div className={classes.grow} >
+      <AppBar position="static" style={{ background: 'white' }}>
         <Toolbar>
-          <IconButton
+          {/* <IconButton
             edge="start"
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
           <Typography className={classes.title} variant="h6" noWrap>
-            Social Media
+           <Link to='/'style={{ textDecoration: 'none',color:"black" }}> Social Media </Link>
           </Typography>
-          <div className={classes.search}>
+          <div className={classes.search} style={{ background: '#e0e0e0' }} >
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
@@ -152,14 +153,14 @@ export default function PrimarySearchAppBar() {
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <MailIcon />
+            <IconButton aria-label="show 4 new mails" color="primary">
+              <Badge badgeContent={4} color="secondary" >      
+                <Link to='/messenger'style={{ textDecoration: 'none' }}> <MailIcon /> </Link>
               </Badge>
             </IconButton>
-            <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="secondary">
-                <NotificationsIcon />
+            <IconButton aria-label="show 17 new notifications" color="primary">
+              <Badge badgeContent={17} color="secondary" >
+              <Link to='/'style={{ textDecoration: 'none' }}> <NotificationsIcon /> </Link>
               </Badge>
             </IconButton>
             <IconButton

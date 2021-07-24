@@ -8,11 +8,14 @@ import Conversation from './Conversation';
 import Message from './Message';
 import axios from 'axios';
 import { io } from "socket.io-client"
+// import  {userdata}  from './userdat';
 
-const user =  JSON.parse(localStorage.getItem('user'))
+
+// console.log(dummy_user);
+// console.log("user",user)
 // userId._id
 
-
+const user = JSON.parse(localStorage.getItem('user'))
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -25,24 +28,25 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Messenger() {
-
+  // const [user, setuser] = useState([])
   const [conversations, setConversations] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [onlineUsers , setOnlineUsers] = useState([])
+  const [followers,setFollowers] = useState()
   const scrollRef = useRef();
   const socket = useRef()
+
+  
+
+
 
   useEffect(() => {
     socket.current = io("ws://localhost:8900")
     socket.current.on("welcome", message => {
       console.log(message);
-    socket.current.emit("adduser",user._id)
-    socket.current.on("getUsers", users => {
-      console.log("Return", users);
-
-    })
 
     socket.current.on("getMessage", (data) => {
       console.log("data",data)
@@ -53,6 +57,7 @@ function Messenger() {
         })
     })
   })
+
   }, [])
 
   useEffect(() => {
@@ -63,6 +68,22 @@ function Messenger() {
   }, [ arrivalMessage , currentChat ])
 
 
+  useEffect(() => {
+    socket.current.emit("adduser",user._id)
+    socket.current.on("getUsers", users => {
+      console.log("users",users);
+      // console.log("user",user);
+      // userdata().then(val => {setFollowers(val.following)}) 
+      // console.log("followers",followers);
+      // setOnlineUsers( 
+      //   user.followers.filter((f) => users.some((u) => u.userId === f._id))
+      // );
+      //   console.log(user.followers.filter((f) => users.some((u) => u.userId === f._id)));
+      console.log("onlineUsers", onlineUsers);
+
+
+    })
+  }, [user])
 
   useEffect(() => {
     const getConversations = async () => {
@@ -176,7 +197,9 @@ function Messenger() {
               <div className="chatOnline">
 
               </div>
-              <ChatOnline/>
+              <ChatOnline onlineUsers={onlineUsers}
+              currentId={user._id}
+              setCurrentChat={setCurrentChat}/>
           </Paper>
         </Grid>
       </Grid>

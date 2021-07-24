@@ -21,8 +21,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import ShareIcon from '@material-ui/icons/Share';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import PrimarySearchAppBar from "./Navbar";
 import Paper from '@material-ui/core/Paper';
@@ -41,21 +40,26 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import AddCommentIcon from '@material-ui/icons/AddComment';
 import { Link } from 'react-router-dom'
 
-import {like} from './post/api-post'
+import {like,unlike} from './post/api-post'
 
 import  {follow}  from './api-user'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > *': {
-      margin: theme.spacing(2),
+      // margin: theme.spacing(1),
       width: '50ch',
+      margin:"10px",
+      // "margin-bottom": "25px"
     },
     // maxWidth: 345,
   },
   media: {
-    height: 0,
-    paddingTop: '56.25%', // 16:9
+    height: '95%',
+    width:'95%',
+    paddingTop: '100%', // 16:9
+    // paddingTop: '0%', // 16:9
+
   },
   avatar: {
     backgroundColor: red[500],
@@ -64,27 +68,71 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
+    margin :"4px"
   },
   large: {
     width: theme.spacing(7),
     height: theme.spacing(7),
   },
+  follow:{
+    margin:"2px",
+    display: "flex",
+    padding:"4px",
+
+  }
+  
 }));
 
 function Home() {
+  const userId =  JSON.parse(localStorage.getItem('user'))
+
+  const classes = useStyles();
+  const { register ,handleSubmit , formState: { errors }} = useForm();
+  const [data, setdata] = useState([])
+  const [user_list, setuser] = useState([])
+  const [dummpy, setdummpy] = useState()
+
   const adddata = (values) =>{
     console.log("Added Values",values);
     console.log("photo",`http://localhost:5000/${values.photo}`);
-    const newTasks = [{text:values.text,photo:values.photo},...data ]
+    const newTasks = [{_id:values._id,text:values.text,photo:values.photo,comments:[]} ,...data ]
     setdata(newTasks);
+  }
+
+  const likeupdate = (val) => {
+    console.log(val)
+    like(val)
+    const data_clone = [...data]
+    data_clone.map((element) => {
+      if( element._id == val){
+      return {...element,likes:element.likes.push(userId._id)}
+    }})
+    setdata(data_clone)
+  }
+
+  const Unlikeupdate =  (val) => {
+    console.log(val)
+    unlike(val)
+    const data_clone = [...data]
+    const rturn_val=  data_clone.map((element) => {
+      // if( element._id == val){
+      //  console.log(element.likes.filter(likeid => likeid == userId._id) )
+      // }
+      if( element._id == val){
+      return {...element,likes:element.likes.filter(likeid => likeid !== userId._id)}
+    }
+    return element
+    })
+    console.log(rturn_val)
+    setdata(rturn_val)
   }
 
   useEffect(() => {
     fetch('http://localhost:5000/api/posts/upload')
       .then(response => response.json())
       .then( product => {
-          // console.log(product.data)
-          setdata(product.data)
+          console.log("product.data",product.data)
+          setdata(product.data.reverse())
       },
       (error) => {
         if (error) {
@@ -110,14 +158,8 @@ function Home() {
   },[])
 
 
-
-
-  const classes = useStyles();
-  const { register ,handleSubmit , formState: { errors }} = useForm();
-  const [data, setdata] = useState([])
-  const [user_list, setuser] = useState([])
-
   const onSubmit = (data) => { 
+
     console.log(data);
     console.log(data.file[0]);
     // console.log(typeof(data.title));
@@ -127,17 +169,19 @@ function Home() {
     formData.append('title', data.title);
     formData.append('photo',data.file[0])
     console.log("formdata",formData);
-    const posted_by = "60f3b40691ef74285e7f350f"
-    const res  =  Axios.post(`http://localhost:5000/api/posts/upload/${posted_by}`, formData)
+    const posted_by = userId._id
+    Axios.post(`http://localhost:5000/api/posts/upload/${posted_by}`, formData)
       .then( val=>{ 
-         console.log(val)
-         console.log(val.data.photo_path); 
-         adddata({'title':data.title,'photo': val.data.photo_path} )
+        //  console.log(val.data)
+        //  console.log(val.data._id,val.data.photo_path); 
+         adddata({"_id":val.data._id,'text':data.title,'photo': val.data.photo_path})
 
         })
 
       .catch(error => {
-        console.log("data",error.response.data);
+        // console.log("data",error.response.data);
+        console.log("data",error);
+
       })
 
     }
@@ -147,16 +191,15 @@ function Home() {
 
 
         <Grid container spacing={3}>
+
         <Grid item xs>
-          <Paper className={classes.paper}>xs
-          </Paper>
-          
+          {/* <Paper className={classes.paper}>xs
+          </Paper>  */}
         </Grid>
+
         <Grid item xs={6}>
-
-
-          <Paper className={classes.paper}>
-                  <form  className={classes.root} onSubmit={handleSubmit(onSubmit)} >   
+        <Paper className={classes.paper}>
+        <form  className={classes.root} onSubmit={handleSubmit(onSubmit)} >   
         {/* <label> Title</label><br/> */}
 
         <TextField {...register("title", { required: true })} name="title" label="User Post" rows={4} variant="outlined" />
@@ -187,36 +230,59 @@ function Home() {
             R
           </Avatar>
         }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title="Shrimp and Chorizo Paella"
+        // action={
+        //   <IconButton aria-label="settings">
+        //     <MoreVertIcon />
+        //   </IconButton>
+        // }
+        title={pro.text}
         subheader="September 14, 2016"
       />
-      {/* <CardContent> */}
+      <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
         This impressive paella is a perfect party dish and a fun meal to cook together with your
         guests. Add 1 cup of frozen peas along with the mussels, if you like.
       </Typography>
-      {/* </CardContent> */}
+      </CardContent>
       <CardMedia
         className={classes.media}
         image={`http://localhost:5000/${pro.photo}`}
         // image="https://images.unsplash.com/photo-1433086966358-54859d0ed716?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bmF0dXJlfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=50"
         title="Paella dish"/> 
       <CardActions disableSpacing>
-        <IconButton onClick={()=>like(pro._id) } aria-label="Like">
+        {/* {console.log(pro.likes.indexOf(userId._id) > -1)} */}
+        { (pro.likes.indexOf(userId._id) > -1)
+        ?  <IconButton onClick={()=> Unlikeupdate(pro._id)} aria-label="Like" color="secondary">
+            <ThumbUpIcon/>
+            <span>{pro.likes.length}</span>
+            {console.log}
+            </IconButton>
+        :  <IconButton onClick={()=>likeupdate(pro._id)  } aria-label="Like" >
           <ThumbUpIcon/>
-          
-        </IconButton>
+          <span>{pro.likes.length}</span>
+          </IconButton>
+        }
+
+{/* 
+      { (pro.comments.indexOf(userId._id) > -1)
+        ?  <IconButton  aria-label="Comment" color="secondary">
+            <AddCommentIcon/>
+            <span>{pro.comments.length}</span>
+            </IconButton>
+        :  <IconButton  aria-label="Comment" >
+          <AddCommentIcon/>
+          <span>{pro.comments.length}</span>
+          </IconButton>
+        } */}
+        
+
         <IconButton aria-label="Comment">
           <AddCommentIcon/>
+          <span>{pro.comments.length}</span>
         </IconButton>
 
       </CardActions>
-      { console.log(pro.comments)}
+      {/* { console.log(pro.comments)} */}
       <Comments post_id={pro._id} comments={pro.comments} />
         {/* <Divider/> */}
     </Card>
@@ -230,20 +296,22 @@ function Home() {
 
         <Grid item xs>
           <ToastContainer/>
-          <Paper className={classes.paper}>
-            <h3>Follow User</h3>
+          <Paper>
+            {/* <h3>Follow User</h3> */}
             
               {user_list.map( (val) => {
                 return(
-                  <div>
-                  <div style={{display: "flex"}}>
+                  <div className={classes.follow}>
+                  
                   <Avatar alt="Aemy Sharp" src="/static/images/avatar/1.jpg" className={classes.large} />
                     {/* <p onClick={}>{val.name}</p>                    */}
-                    <p ><Link to={`/profile/${val._id}/`}>{val.name}</Link></p>                   
-                  </div>
-                  <Button variant="contained" onClick={ ()=> follow(val._id),()=> toast.success("You Follow a User")} color="primary">
+                    <p style={{padding:"10px" }}><Link style={{ textDecoration: 'none',color:"black" }} to={`/profile/${val._id}/`}>{val.name}</Link></p>                   
+                    
+                  <div style={{"margin-left":"10%"}}>
+                  <Button variant="contained" size="small" onClick={ ()=> follow(val._id),()=> toast.success("You Follow a User")} color="primary">
                   Follow
                 </Button>
+                </div>
             
                   </div>
                 )

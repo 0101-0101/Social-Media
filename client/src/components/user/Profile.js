@@ -62,14 +62,13 @@ function Profile(param) {
         // console.log(followers,following);
       // setdata({followers,following})
 
+      console.log("listByUser(profileID)",listByUser(profileID));
       listByUser(profileID)
       .then( (posts) => {
-        // console.log(posts);
+        console.log(posts);
         setdata({followers,following,posts})
       })
     })
-
-
     // console.log(read({profileID}).followers);
     // setdata(data)
       // .then((data) => {
@@ -111,15 +110,10 @@ function Profile(param) {
           </CardActionArea>
         </Card>
         </Grid>
-          )
-        
+          )       
         })}
         </Grid>
-       
-
-
         </Grid>
-
       </Grid>
       
   </div>

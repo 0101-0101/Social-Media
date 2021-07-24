@@ -23,6 +23,24 @@ export const like = (postId) => {
     })
   }
 
+  export const unlike = (postId) => {
+    console.log("Unlike",postId);
+    Axios.put('http://localhost:5000/api/posts/unlike/',
+    {userId:userId._id, postId},
+        {
+        Headers: {
+            'authorization':token
+      }
+      }            
+      ) 
+    .then((response) => {
+      console.log(response);
+      console.log("Unlike Sucess");
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
 export const comment = ({post_id},all_comment)=>{
     console.log("followId",post_id,all_comment);
     console.log("userId",userId._id);
@@ -45,7 +63,7 @@ export const comment = ({post_id},all_comment)=>{
 
 export const listByUser = (params)=>{
   console.log("userId",params);
-  return Axios.get(`http://localhost:5000/api/posts/by/${params}`,
+   return(Axios.get(`http://localhost:5000/api/posts/by/${params}`,
       { Headers: {'authorization':token } }
       )
   .then(response => {
@@ -56,4 +74,5 @@ export const listByUser = (params)=>{
   .catch(error => {
       console.log(error);
   })
+   )
 }

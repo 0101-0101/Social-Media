@@ -11,11 +11,15 @@
         photo: req.file.path
       }
       const post = new Post(requestBody)
+      
       post.postedBy= req.profile
       
       try{
-          await post.save()
-          res.status(201).json({photo_path: req.file.path})
+          const { _id } = await post.save()
+          console.log("_id:",_id);
+          res.status(201).json({ _id,photo_path: req.file.path})
+          // res.status(201).json({ _id:post._id, photo_path: req.file.path})
+
       }catch(e){
           console.log("error",e)
           res.status(400).send(e)
@@ -100,6 +104,18 @@ exports.like = (req, res) => {
       res.json(result)
     })
   }
+  
+exports.unlike = (req, res) => {
+  Post.findByIdAndUpdate(req.body.postId, {$pull: {likes: req.body.userId}}, {new: true})
+  .exec((err, result) => {
+    if (err) {
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+    res.json(result)
+  })
+}
 
 exports.listByUser = (req, res) => {
   // User.findById(id)
@@ -126,14 +142,4 @@ exports.listByUser = (req, res) => {
   }
   // }
 
-  const unlike = (req, res) => {
-    Post.findByIdAndUpdate(req.body.postId, {$pull: {likes: req.body.userId}}, {new: true})
-    .exec((err, result) => {
-      if (err) {
-        return res.status(400).json({
-          error: errorHandler.getErrorMessage(err)
-        })
-      }
-      res.json(result)
-    })
-  }
+

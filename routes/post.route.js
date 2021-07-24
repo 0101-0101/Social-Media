@@ -6,7 +6,7 @@ var multer = require('multer');
 const verifyToken = require("../middlewares/authJwt");
 
 const {user_post , get_post ,
-         comment , like,
+         comment , like, unlike,
          listByUser } = require('../controllers/post.controller')
 
 const { userByID } =require('../controllers/user.controller')
@@ -27,6 +27,8 @@ router.get('/api/posts/upload', get_post )
         })
 
 router.put('/api/posts/like',like)
+router.put('/api/posts/unlike',unlike)
+
 router.put('/api/posts/comment',comment)
 // router.put('/api/posts/uncomment',uncomment)
 router.get('/api/posts/by/:userId',listByUser)
