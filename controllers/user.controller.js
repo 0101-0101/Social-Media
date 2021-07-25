@@ -27,7 +27,11 @@ exports.read = (req, res) => {
 
 exports.list = (req, res) => {
     // const val= User.find({},{'name':1})
-    const val = User.find({}).select('name')
+    // const val = User.find({}).select('name')
+
+    const val = User.find({}).select('name profile_pic')
+ 
+
     // const val= users.find({"name":true})
 
     val.exec(function (err, someValue) {
@@ -67,6 +71,18 @@ exports.addFollower = (req, res) => {
   })
 }
 
+
+exports.search = (req,res) => {
+  console.log(req.query.value);
+  const val = req.query.value
+  console.log(val);
+  return User.find({"name": new RegExp(".*"+val+".*", "i"),}).select('name profile_pic')
+  .then((result)=>{
+    // console.log("result",result);
+      res.status(200).json(result)
+    } )
+}
+
 const removeFollowing = (req, res, next) => {
   User.findByIdAndUpdate(req.body.userId, {$pull: {following: req.body.unfollowId}}, (err, result) => {
     if (err) {
@@ -93,5 +109,31 @@ const removeFollower = (req, res) => {
   })
 }
 
+exports.user_pp =  (req, res) => {
+  console.log(req.file); // form files
+  console.log(req.params.userId , req.file.path)
+  
+    // User.findByIdAndUpdate(req.params.userId,{ $set: { "profile_pic": req.file.path} } , (err, result) => {
+    /* User.findByIdAndUpdate(req.params.userId, { profile_pic: req.file.path}, (err, result) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler.getErrorMessage(err)
+        })
+      }
+    res.json(result)
+    }) */
+
+    User.findByIdAndUpdate(req.params.userId, { profile_pic: req.file.path},{new: true})
+    .exec((err, result) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler.getErrorMessage(err)
+        })
+      }
+    console.log(result)
+    res.json(result)
+    })
+
+} 
 
 

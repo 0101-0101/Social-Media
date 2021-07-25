@@ -14,6 +14,10 @@ import { listByUser } from '../post/api-post'
 
 import { Link, useParams } from 'react-router-dom';
 
+import cookie from 'js-cookie'
+
+const token = cookie.get('token')
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,7 +59,8 @@ function Profile(param) {
   const [data, setdata] = useState({
           following:0,
           followers:0,
-          posts: []
+          posts: [],
+          pp:''
         })
 
   // const check
@@ -67,6 +72,7 @@ function Profile(param) {
       console.log(data);
         const followers = data.followers.length
         const following = data.following.length
+        const pp = data.profile_pic
         // console.log(followers,following);
       // setdata({followers,following})
 
@@ -74,7 +80,7 @@ function Profile(param) {
       listByUser(profileID)
       .then( (posts) => {
         console.log(posts);
-        setdata({followers,following,posts})
+        setdata({followers,following,posts,pp})
       })
     })
     // console.log(read({profileID}).followers);
@@ -82,6 +88,25 @@ function Profile(param) {
       // .then((data) => {
       // })
   }, [])
+
+  const changePic = (e) => {
+
+    const formdata = new FormData()
+    formdata.append('photo',e.target.files[0])
+    // setdata({pp:e.target.files[0]})
+    Axios.put(`http://localhost:5000/api/users/pp/${userId}`, formdata,
+    { Headers: { 'authorization':token } }) 
+      .then((response) => {
+        console.log(response);
+
+        // [{_id:values._id,text:values.text,photo:values.photo,comments:[]} ,...data ]
+        // console.log({ ...data, pp:response.data.profile_pic })
+        setdata({ ...data, pp:response.data.profile_pic })
+        console.log("Upload Sucess");
+      }).catch((err) => {
+        console.log(err)
+      })
+}
 
 
 
@@ -92,7 +117,11 @@ function Profile(param) {
       <Grid container spacing={3}>
       <Grid item xs={12} >
           <Paper className={classes.paper}>
-          <Avatar className={classes.large} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+          <Avatar className={classes.large} alt="Remy Sharp" src={`http://localhost:5000/${data.pp}`} >
+          </Avatar>
+          <input type="file" onChange={ changePic } name="photo"/>
+
+          
 
       <div style={{margin:"40px",display: "flex"}}>
           <h2 style={{ "margin-right": "30px"}}>Post:{data.posts.length}</h2>

@@ -26,6 +26,26 @@ export const follow = (followId)=>{
     })
 }
 
+// export const changePic = (followId)=>{
+//     console.log("followId",followId);
+//     console.log("userId",userId._id);
+//     Axios.put('http://localhost:5000/api/users/follow',
+//         {userId:userId._id, followId: followId},
+//         {
+//             Headers: {
+//                 'authorization':token
+//             }
+//           }
+//         )
+//     .then(response => {
+//         console.log(response);
+//         console.log("Sucess");
+//     })
+//     .catch(error => {
+//         console.log(error);
+//     })
+// }
+
 export const read = (params)=>{
     console.log("profileID",params);
     return Axios.get(`http://localhost:5000/api/users/${params.profileID}`)

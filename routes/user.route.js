@@ -1,7 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-const {list ,addFollowing, addFollower,
+var multer = require('multer');
+
+
+const {list ,addFollowing, addFollower,search,user_pp,
         userByID,read} =require('../controllers/user.controller')
 
 // import userCtrl from '../controllers/user.controller'
@@ -23,9 +26,24 @@ const {list ,addFollowing, addFollower,
 // module.exports = router
 
 router.get('/api/users',list)
+
+
+var storage = multer.diskStorage({
+        destination: function (req,file,cb){
+            cb(null, 'public/user_pp')
+        }
+      })
+var upload = multer({storage: storage}); 
+
+router.put('/api/users/pp/:userId', upload.single('photo'),  function(req, res){
+        user_pp(req,res)
+        })
+
 router.put('/api/users/follow', addFollowing, addFollower)
 
 router.get('/api/users/:userId',read)
+
+router.post('/api/users/search',search)
 
 // router.put('/api/users/unfollow',removeFollowing, removeFollower)
 

@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
         data: String,
         default: ''
     },
-    photo:{
+    profile_pic:{
         type : String
     },
     following: [{type: mongoose.Schema.ObjectId, ref: 'User'}],

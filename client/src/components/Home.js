@@ -45,6 +45,7 @@ import { like,unlike,remove } from './post/api-post'
 
 import  {follow}  from './api-user'
 
+
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > *': {
@@ -92,7 +93,7 @@ function Home() {
   const { register ,handleSubmit , formState: { errors }} = useForm();
   const [data, setdata] = useState([])
   const [user_list, setuser] = useState([])
-  const [dummpy, setdummpy] = useState()
+  const [search, setsearch] = useState()
 
   const adddata = (values) =>{
     console.log("Added Values",values);
@@ -157,7 +158,7 @@ function Home() {
     fetch('http://localhost:5000/api/users')
     .then( response => response.json() )
     .then( user => {
-      // console.log(user)
+      console.log(user)
       setuser(user)
 
     },
@@ -305,7 +306,7 @@ function Home() {
 
       </CardActions>
 
-      { console.log(pro.comments)}
+      {/* { console.log(pro.comments)} */}
       <Comments post_id={pro._id} comments={pro.comments} />
         {/* <Divider/> */}
     </Card>
@@ -325,8 +326,12 @@ function Home() {
               {user_list.map( (val) => {
                 return(
                   <div className={classes.follow}>
+                    
+                    {/* <Avatar aria-label="recipe" className={classes.avatar}>
+                      R
+                    </Avatar> */}
                   
-                  <Avatar alt="Aemy Sharp" src="/static/images/avatar/1.jpg" className={classes.large} />
+                  <Avatar alt={val.name} src={`http://localhost:5000/${val.profile_pic}`} className={classes.large} />
                     {/* <p onClick={}>{val.name}</p>                    */}
                     <p style={{padding:"10px" }}><Link style={{ textDecoration: 'none',color:"black" }} to={`/profile/${val._id}/`}>{val.name}</Link></p>                   
                     

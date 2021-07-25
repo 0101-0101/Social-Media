@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -14,6 +14,13 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import Avatar from '@material-ui/core/Avatar';
+import { ToastContainer, toast } from 'react-toastify';
+
+import  {follow}  from './api-user'
+import Button from '@material-ui/core/Button';
+
+
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -81,13 +88,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+
+const SearchContext = React.createContext();
+
+
 export default function PrimarySearchAppBar() {
+  const [Search, setSearch] = useState()
   const userId =  JSON.parse(localStorage.getItem('user'))
 
 
   const classes = useStyles();
 
+  function searchProduct(e){
+    e.preventDefault()
+    // console.log(e.target.value);
+    // setSearch(e.target.value)
+  
+    const val = e.target.value
+    console.log(val);
+    fetch (`http://localhost:5000/api/users/search?value=${val}`, {
+      method: 'POST',
+        })
+        .then (response => response.json ())
+        .then (response => {
+            console.log(response)
+            setSearch(response)
+            // setProducts(response)
+            // dispatch( { type:FETCH_DATA,payload: response } ) 
+        })
+        .catch (error => {
+            console.error (error);
+        });
 
+        setTimeout(() => {setSearch()}, 3000);
+  }
 
   const menuId = 'primary-search-account-menu';
 
@@ -125,6 +160,7 @@ export default function PrimarySearchAppBar() {
   
   return (
     <div className={classes.grow} >
+                <ToastContainer/>
       <AppBar position="static" style={{ background: 'white' }}>
         <Toolbar>
           {/* <IconButton
@@ -148,6 +184,7 @@ export default function PrimarySearchAppBar() {
                 root: classes.inputRoot,
                 input: classes.inputInput,
               }}
+              onChange={searchProduct}
               inputProps={{ 'aria-label': 'search' }}
             />
           </div>
@@ -175,6 +212,28 @@ export default function PrimarySearchAppBar() {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
+      
+            {Search?.map( (val) => {
+                return(
+                  <div style={{display:"inline-flex"}}>
+                    
+                    {/* <Avatar aria-label="recipe" className={classes.avatar}>
+                      R
+                    </Avatar> */}
+                  
+                  <Avatar alt={val.name} src={`http://localhost:5000/${val.profile_pic}`}  />
+                    {/* <p onClick={}>{val.name}</p>                    */}
+                    <p style={{padding:"10px" }}><Link style={{ textDecoration: 'none',color:"black" }} to={`/profile/${val._id}/`}>{val.name}</Link></p>                   
+                    
+                  <div style={{"margin-left":"10%"}}>
+                  <Button variant="contained" size="small" onClick={ ()=> follow(val._id),()=> toast.success("You Follow a User")} color="primary">
+                  Follow
+                </Button>
+                </div>
+            
+                  </div>
+                )
+              })}
     </div>
   );
 }
