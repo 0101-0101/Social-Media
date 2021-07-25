@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Alert from '@material-ui/lab/Alert';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 
 import clsx from 'clsx';
@@ -40,7 +41,7 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import AddCommentIcon from '@material-ui/icons/AddComment';
 import { Link } from 'react-router-dom'
 
-import {like,unlike} from './post/api-post'
+import { like,unlike,remove } from './post/api-post'
 
 import  {follow}  from './api-user'
 
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
       // margin: theme.spacing(1),
       width: '50ch',
       margin:"10px",
+      
       // "margin-bottom": "25px"
     },
     // maxWidth: 345,
@@ -75,9 +77,9 @@ const useStyles = makeStyles((theme) => ({
     height: theme.spacing(7),
   },
   follow:{
-    margin:"2px",
+    margin:"10px",
     display: "flex",
-    padding:"4px",
+    padding:"5px",
 
   }
   
@@ -125,6 +127,16 @@ function Home() {
     })
     console.log(rturn_val)
     setdata(rturn_val)
+  }
+
+  const deletePost = (postId) => {
+        console.log(postId)
+        
+      const finalPost =  data.filter( val => val._id !==postId )
+      console.log(finalPost);
+      setdata(finalPost)
+      remove(postId)
+
   }
 
   useEffect(() => {
@@ -255,7 +267,7 @@ function Home() {
         ?  <IconButton onClick={()=> Unlikeupdate(pro._id)} aria-label="Like" color="secondary">
             <ThumbUpIcon/>
             <span>{pro.likes.length}</span>
-            {console.log}
+            {/* {console.log} */}
             </IconButton>
         :  <IconButton onClick={()=>likeupdate(pro._id)  } aria-label="Like" >
           <ThumbUpIcon/>
@@ -263,8 +275,8 @@ function Home() {
           </IconButton>
         }
 
-{/* 
-      { (pro.comments.indexOf(userId._id) > -1)
+
+      {/* { (pro.comments.indexOf(userId._id) > -1)
         ?  <IconButton  aria-label="Comment" color="secondary">
             <AddCommentIcon/>
             <span>{pro.comments.length}</span>
@@ -278,11 +290,22 @@ function Home() {
 
         <IconButton aria-label="Comment">
           <AddCommentIcon/>
-          <span>{pro.comments.length}</span>
+          {/* <span>{pro.comments.length}</span> */}
         </IconButton>
 
+
+        { userId._id == pro.postedBy &&
+        <IconButton>
+        <DeleteIcon onClick= { () => deletePost(pro._id)}/>
+        {/* <DeleteIcon onClick={ () => deleteComment(post_id,item._id)}/> */}
+
+        </IconButton>
+        
+        }
+
       </CardActions>
-      {/* { console.log(pro.comments)} */}
+
+      { console.log(pro.comments)}
       <Comments post_id={pro._id} comments={pro.comments} />
         {/* <Divider/> */}
     </Card>

@@ -29,14 +29,22 @@ const useStyles = makeStyles((theme) => ({
   //   marginLeft:40
     
   // },
-  paper: {
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
+  paper: 
+  {
+    margin:"10px",
+    display: "flex",
+    padding:"20px",
+    // "justify-content": "center" 
+    // textAlign: 'center',
+    // padding: theme.spacing(6),
   },
   media: {
     height: 250,
   },
+  large: {
+    width: theme.spacing(18),
+    height: theme.spacing(18),
+  }
 }));
 
 function Profile(param) {
@@ -84,12 +92,18 @@ function Profile(param) {
       <Grid container spacing={3}>
       <Grid item xs={12} >
           <Paper className={classes.paper}>
-          <Avatar className={classes.root} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-          <h2>Followers:{data.followers}</h2>
-          <h2>Following:{data.following}</h2>
+          <Avatar className={classes.large} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+
+      <div style={{margin:"40px",display: "flex"}}>
+          <h2 style={{ "margin-right": "30px"}}>Post:{data.posts.length}</h2>
+          <h2  style={{ "margin-right": "30px"}}>Followers:{data.followers}</h2>
+          <h2 >Following:{data.following}</h2>
+      </div>
+          
+   
           </Paper>
           
-          <h2>Posts</h2>
+          {/* <h2>Posts</h2> */}
           <Grid container spacing={2}>
 
           {data.posts.map( val => {

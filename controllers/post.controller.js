@@ -26,6 +26,20 @@
       }
   } 
 
+
+exports.remove = (req, res) => {
+  let post = req.post
+    post.remove((err, deletedPost) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler.getErrorMessage(err)
+        })
+      }
+      res.json(deletedPost)
+    })
+}
+  
+
   exports.get_post  = async (req,res) => {
     try{
         let prod = await Post.find()
@@ -79,8 +93,9 @@ exports.comment = (req, res) => {
   }
 
 exports.uncomment = (req, res) => {
-    let comment = req.body.comment
-    Post.findByIdAndUpdate(req.body.postId, {$pull: {comments: {_id: comment._id}}}, {new: true})
+    // let comment = req.body.comment_id
+    // console.log(req.body);
+    Post.findByIdAndUpdate(req.body.postId, {$pull: {comments: {_id: req.body.comment_id}}}, {new: true})
     .populate('comments.postedBy', '_id name')
     .populate('postedBy', '_id name')
     .exec((err, result) => {
@@ -114,6 +129,17 @@ exports.unlike = (req, res) => {
       })
     }
     res.json(result)
+  })
+}
+
+exports.postByID = (req, res, next, id) => {
+  Post.findById(id).populate('postedBy', '_id name').exec((err, post) => {
+    if (err || !post)
+      return res.status('400').json({
+        error: "Post not found"
+      })
+    req.post = post
+    next()
   })
 }
 

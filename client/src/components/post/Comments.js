@@ -7,9 +7,10 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
 import Axios from 'axios';
-import {comment} from './api-post'
+import {comment , uncomment} from './api-post'
 import {Link} from 'react-router-dom'
 import DeleteIcon from '@material-ui/icons/Delete';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -43,11 +44,14 @@ const useStyles = makeStyles((theme) => ({
 )
 
 function Comments({post_id,comments}) {
+  const userId =  JSON.parse(localStorage.getItem('user'))
+
     // console.log("Comment",post_id,comments);
     // var comments = comments
     // const [prev, setprev] = useState()
     // setprev(comments)
-    const [all_comment, setcomment] = useState({})
+    const [all_comment,setall] = useState(comments.reverse())
+    const [add_comment, setcomment] = useState()
     // const handleChange =  event => {
     //     // setcomment({[event.target.name]: event.target.value})
     //     console.log(event.target.value);
@@ -62,8 +66,18 @@ function Comments({post_id,comments}) {
     // }
 
         const postComment = (event) => {
-            console.log("ADd1 ",post_id,all_comment);
-            comment(post_id,all_comment.Comment)
+            console.log("ADd1 ",post_id,add_comment);
+            comment({post_id,add_comment})
+            .then(val => {
+              console.log("return val", val);
+              // comments 
+              // setall([{_id:val._id,text:add_comment,postedBy:val.postedBy} ,...all_comment ])
+              // setall([{_id:val._id,text:comments,postedBy:val.postedBy} ,...all_comment ])
+              setall(val.comments.reverse())
+
+            })
+            setcomment()
+            
             // Axios.put
     }
 
@@ -73,17 +87,33 @@ function Comments({post_id,comments}) {
     //         console.log(response)
     //     })
     // }, [])
-
+    
     const classes = useStyles();
+
+    const deleteComment = (post_id,comment_id) => {
+      console.log("Param", post_id,comment_id);
+      // all_comment.map( (value) => {
+      //   return {...value,}
+      // })
+      const removecmt = all_comment.filter( val => val._id !==comment_id )
+      console.log(removecmt);
+      setall(removecmt)
+
+      uncomment({ post_id , comment_id })
+    }
+    
     const commentBody = item => {
+      // console.log(userId._id,item.postedBy);
       return (
         <p className={classes.commentText}>
-          <Link to={"/user/" + item.postedBy._id}>{item.postedBy.name}</Link><br/>
+          {/* <Link to={"/user/" + item.postedBy._id}>{item.postedBy.name}</Link><br/> */}
           {item.text}
           <span className={classes.commentDate}>
             {(new Date(item.created)).toDateString()} |
-            {
-              <DeleteIcon className={classes.commentDelete}>delete</DeleteIcon> }
+          {userId._id == item.postedBy &&
+              <DeleteIcon onClick={ () => deleteComment(post_id,item._id)} className={classes.commentDelete}>delete</DeleteIcon> }
+              {/* <DeleteIcon onclick={ () => uncomment(post_id,item._id)} className={classes.commentDelete}>delete</DeleteIcon> } */}
+
           </span>
         </p>
       )
@@ -101,7 +131,7 @@ function Comments({post_id,comments}) {
             // onKeyDown={addComment}
             multiline
             // value={this.state.text}
-            onChange={ (event) => setcomment({"Comment": event.target.value}) }
+            onChange={ (event) => setcomment(event.target.value) }
             placeholder="Write something ..."
             margin="normal"
             />}
@@ -113,8 +143,8 @@ function Comments({post_id,comments}) {
       </Button>
 
       
-      
-      {comments.map((val) => {
+      <div style={{"margin-left": "10%" }}>
+      {all_comment.map((val) => {
             return(
               <CardHeader
                       avatar={
@@ -125,6 +155,7 @@ function Comments({post_id,comments}) {
                       key={val}/>
             )
       }) }
+    </div>
 
         </div>
     )

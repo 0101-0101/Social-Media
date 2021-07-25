@@ -23,6 +23,24 @@ export const like = (postId) => {
     })
   }
 
+
+  export const remove = (postId) => {
+    console.log("RemoveID",postId);
+    Axios.delete(`http://localhost:5000/api/posts/${postId}`,
+        {
+        Headers: {
+            'authorization':token
+      }
+      }            
+      ) 
+    .then((response) => {
+      console.log(response);
+      console.log("Remove Sucess");
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
   export const unlike = (postId) => {
     console.log("Unlike",postId);
     Axios.put('http://localhost:5000/api/posts/unlike/',
@@ -41,11 +59,11 @@ export const like = (postId) => {
     })
   }
 
-export const comment = ({post_id},all_comment)=>{
-    console.log("followId",post_id,all_comment);
+export const comment = async ({post_id,add_comment})=>{
+    console.log("followId",post_id,add_comment);
     console.log("userId",userId._id);
-    Axios.put('http://localhost:5000/api/posts/comment',
-        {userId:userId._id, postId: post_id,comment:all_comment},
+    return await Axios.put('http://localhost:5000/api/posts/comment',
+        {userId:userId._id, postId: post_id,comment:add_comment},
         {
             Headers: {
                 'authorization':token
@@ -54,11 +72,35 @@ export const comment = ({post_id},all_comment)=>{
         )
     .then(response => {
         console.log(response);
+
         console.log("Comment Sucess");
-    })
+        return response.data
+      })
     .catch(error => {
         console.log(error);
     })
+}
+
+export const uncomment = async ({post_id,comment_id})=>{
+  console.log("followId",post_id,comment_id);
+  console.log("userId",userId._id);
+   await Axios.put('http://localhost:5000/api/posts/uncomment',
+      {userId:userId._id, postId: post_id,comment_id:comment_id},
+      {
+          Headers: {
+              'authorization':token
+          }
+        }
+      )
+  .then(response => {
+      console.log(response);
+
+      console.log("UnComment Sucess");
+      // return response.data
+    })
+  .catch(error => {
+      console.log(error);
+  })
 }
 
 export const listByUser = (params)=>{
