@@ -43,7 +43,7 @@ import { Link } from 'react-router-dom'
 
 import { like,unlike,remove } from './post/api-post'
 
-import  {follow}  from './api-user'
+import  {follow , unfollow}  from './api-user'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -95,10 +95,22 @@ function Home() {
   const [user_list, setuser] = useState([])
   const [search, setsearch] = useState()
 
+  // var current_user = user_list.filter((val) => val._id == userId._id)
+  // console.log("current_user",current_user)
+
   const adddata = (values) =>{
     console.log("Added Values",values);
     console.log("photo",`http://localhost:5000/${values.photo}`);
-    const newTasks = [{_id:values._id,text:values.text,photo:values.photo,comments:[]} ,...data ]
+
+
+        /* 
+            Be Careful
+            [] Bracket return array
+
+        */
+        const newTasks = [{_id:values._id,text:values.text,photo:values.photo,comments:[]} ,...data ]
+
+
     setdata(newTasks);
   }
 
@@ -144,13 +156,8 @@ function Home() {
     fetch('http://localhost:5000/api/posts/upload')
       .then(response => response.json())
       .then( product => {
-          console.log("product.data",product.data)
+          // console.log("product.data",product.data)
           setdata(product.data.reverse())
-      },
-      (error) => {
-        if (error) {
-          console.log(error);
-        }
       })
   }, [])
 
@@ -158,18 +165,57 @@ function Home() {
     fetch('http://localhost:5000/api/users')
     .then( response => response.json() )
     .then( user => {
-      console.log(user)
+      // console.log(user)
       setuser(user)
-
-    },
-    (error) => {
-      if (error){
-        console.log(error);
-      }
-    }
-    )
+    })
   },[])
+  console.log(user_list)  
 
+  function userFollow(val){
+    console.log("val",val);
+    follow(val)
+    const user_clone = [...user_list]
+     const ret = user_clone.map((user_val) => {
+       if (user_val._id ==userId._id){
+        /* 
+          !!! Javascript Array Return length of Array not the item pushed !!!
+          Here Array is Pass by Reference(AnyChange on Array is Refelected on its Copy Array 
+            so console.log(user_val.following.push({"_id":val})))  also push the value to Original Array
+        */
+
+        // 1.Working code
+        // user_val.following.push({"_id":val})
+        //  return user_val
+
+        // 2.Working Code
+        return {...user_val,following: user_val.following.concat({"_id":val}) }
+       } 
+       return user_val
+     })
+    //  console.log("ret",ret)    
+     setuser(ret)
+
+
+    // setuser( user_list.filter((val) => val._id !==val) )
+  }
+
+  function userUnfollow(val){
+    unfollow(val)
+    const user_clone = [...user_list]
+        // User Unfollow
+    // console.log(user_list.filter((val) => val._id !==val))
+    const ret = user_clone.map((user_val) => {
+      if (user_val._id ==userId._id){
+        // console.log( { ...user_val, following: user_val.following.filter((value) => value._id !==val) } )
+          return { ...user_val, following: user_val.following.filter((value) => value._id !==val) }
+      }
+      return user_val
+    })
+    console.log(ret)
+    setuser(ret)
+
+
+  }
 
   const onSubmit = (data) => { 
 
@@ -324,6 +370,18 @@ function Home() {
             {/* <h3>Follow User</h3> */}
             
               {user_list.map( (val) => {
+                // console.log(val.following,val._id);
+                var current_user = user_list.filter((val) => val._id == userId._id)
+                console.log("current_user",current_user)
+                console.log(current_user[0].following.map((val) => val._id));
+                const user_follow = current_user[0].following.map((val) => val._id)
+                if ( !(val._id == userId._id)){
+
+                // const status = user_list.some( (val) => val.following.includes()))
+                
+                  // console.log(val.following.map((follow) => follow._id),userId._id);
+                  // console.log(val.following.map((follow) => follow._id).includes(userId._id));
+                // if( !user_list.following.includes(userId._id))
                 return(
                   <div className={classes.follow}>
                     
@@ -336,13 +394,21 @@ function Home() {
                     <p style={{padding:"10px" }}><Link style={{ textDecoration: 'none',color:"black" }} to={`/profile/${val._id}/`}>{val.name}</Link></p>                   
                     
                   <div style={{"margin-left":"10%"}}>
-                  <Button variant="contained" size="small" onClick={ ()=> follow(val._id),()=> toast.success("You Follow a User")} color="primary">
+
+                  {(user_follow.includes(val._id))?
+                  <Button variant="contained" size="small" onClick={ ()=>userUnfollow(val._id)} color="primary">
+                  UnFollow
+                </Button>
+                :
+                <Button variant="contained" size="small" onClick={ ()=> userFollow(val._id)} color="primary">
                   Follow
                 </Button>
+                }
                 </div>
             
                   </div>
                 )
+                  }
               })}
           </Paper>
         </Grid>

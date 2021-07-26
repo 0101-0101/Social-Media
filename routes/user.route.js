@@ -5,6 +5,7 @@ var multer = require('multer');
 
 
 const {list ,addFollowing, addFollower,search,user_pp,
+        removeFollowing, removeFollower,
         userByID,read} =require('../controllers/user.controller')
 
 // import userCtrl from '../controllers/user.controller'
@@ -45,7 +46,7 @@ router.get('/api/users/:userId',read)
 
 router.post('/api/users/search',search)
 
-// router.put('/api/users/unfollow',removeFollowing, removeFollower)
+router.put('/api/users/unfollow',[removeFollowing, removeFollower])
 
 router.param('userId', userByID)
 

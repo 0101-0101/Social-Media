@@ -7,6 +7,9 @@ import Grid from '@material-ui/core/Grid';
 import CardMedia from '@material-ui/core/CardMedia';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
 
 import Axios from 'axios';
 import { read } from '../api-user'
@@ -33,6 +36,17 @@ const useStyles = makeStyles((theme) => ({
   //   marginLeft:40
     
   // },
+    modal: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    paper: {
+      backgroundColor: theme.palette.background.paper,
+      border: '2px solid #000',
+      boxShadow: theme.shadows[5],
+      padding: theme.spacing(2, 4, 3),
+    },
   paper: 
   {
     margin:"10px",
@@ -52,13 +66,23 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Profile(param) {
+
   const { userId } = useParams()
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   
   console.log("Val",userId);
 
   const [data, setdata] = useState({
-          following:0,
-          followers:0,
+          following:[],
+          followers:[],
           posts: [],
           pp:''
         })
@@ -70,8 +94,8 @@ function Profile(param) {
     read({profileID})
     .then((data)=> {
       console.log(data);
-        const followers = data.followers.length
-        const following = data.following.length
+        const followers = data.followers
+        const following = data.following
         const pp = data.profile_pic
         // console.log(followers,following);
       // setdata({followers,following})
@@ -114,6 +138,29 @@ function Profile(param) {
     return (
      
   <div className={classes.root}>
+
+<Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+
+        <Fade in={open}>
+          <div className={classes.paper}>
+            <h2 id="transition-modal-title">Transition modal</h2>
+            <p id="transition-modal-description">react-transition-group animates me.</p>
+          </div>
+        </Fade>
+      </Modal>
+
+
       <Grid container spacing={3}>
       <Grid item xs={12} >
           <Paper className={classes.paper}>
@@ -124,9 +171,9 @@ function Profile(param) {
           
 
       <div style={{margin:"40px",display: "flex"}}>
-          <h2 style={{ "margin-right": "30px"}}>Post:{data.posts.length}</h2>
-          <h2  style={{ "margin-right": "30px"}}>Followers:{data.followers}</h2>
-          <h2 >Following:{data.following}</h2>
+          <h2 style={{ "margin-right": "30px"}} >Post:{data.posts.length}</h2>
+          <h2  style={{ "margin-right": "30px"}} onClick={handleOpen}>Followers:{data.followers.length}</h2>
+          <h2 >Following:{data.following.length}</h2>
       </div>
           
    

@@ -28,10 +28,8 @@ exports.read = (req, res) => {
 exports.list = (req, res) => {
     // const val= User.find({},{'name':1})
     // const val = User.find({}).select('name')
-
     const val = User.find({}).select('name profile_pic')
- 
-
+    .populate('following', '_id')
     // const val= users.find({"name":true})
 
     val.exec(function (err, someValue) {
@@ -51,7 +49,7 @@ exports.addFollowing = (req, res, next) => {
         error: errorHandler.getErrorMessage(err)
       })
     }
-    next()
+    // next()
   })
 }
 
@@ -65,8 +63,8 @@ exports.addFollower = (req, res) => {
         error: errorHandler.getErrorMessage(err)
       })
     }
-    result.hashed_password = undefined
-    result.salt = undefined
+    // result.hashed_password = undefined
+    // result.salt = undefined
     res.json(result)
   })
 }
@@ -83,7 +81,7 @@ exports.search = (req,res) => {
     } )
 }
 
-const removeFollowing = (req, res, next) => {
+exports.removeFollowing = (req, res, next) => {
   User.findByIdAndUpdate(req.body.userId, {$pull: {following: req.body.unfollowId}}, (err, result) => {
     if (err) {
       return res.status(400).json({
@@ -93,7 +91,8 @@ const removeFollowing = (req, res, next) => {
     next()
   })
 }
-const removeFollower = (req, res) => {
+
+exports.removeFollower = (req, res) => {
   User.findByIdAndUpdate(req.body.unfollowId, {$pull: {followers: req.body.userId}}, {new: true})
   .populate('following', '_id name')
   .populate('followers', '_id name')
@@ -123,6 +122,7 @@ exports.user_pp =  (req, res) => {
     res.json(result)
     }) */
 
+    // {new: true} return the Updated result
     User.findByIdAndUpdate(req.params.userId, { profile_pic: req.file.path},{new: true})
     .exec((err, result) => {
       if (err) {

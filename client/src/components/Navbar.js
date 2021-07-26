@@ -39,9 +39,9 @@ const useStyles = makeStyles((theme) => ({
   search: {
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    backgroundColor: alpha(theme.palette.common.black, 0.15),
     '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
+      backgroundColor: alpha(theme.palette.common.black, 0.25),
     },
     marginRight: theme.spacing(2),
     marginLeft: 0,
@@ -121,7 +121,7 @@ export default function PrimarySearchAppBar() {
             console.error (error);
         });
 
-        setTimeout(() => {setSearch()}, 3000);
+        setTimeout(() => {setSearch()}, 5000);
   }
 
   const menuId = 'primary-search-account-menu';
@@ -174,7 +174,7 @@ export default function PrimarySearchAppBar() {
           <Typography className={classes.title} variant="h6" noWrap>
            <Link to='/'style={{ textDecoration: 'none',color:"black" }}> Social Media </Link>
           </Typography>
-          <div className={classes.search} style={{ background: '#e0e0e0' }} >
+          <div className={classes.search} style={{ background: '#efebe9' }} >
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
@@ -200,10 +200,10 @@ export default function PrimarySearchAppBar() {
               <Link to='/'style={{ textDecoration: 'none' }}> <NotificationsIcon /> </Link>
               </Badge>
             </IconButton>
+          
             <IconButton
 
               // onClick={handleProfileMenuOpen}
-              color="inherit"
             >
             <Link to={`/profile/${userId._id}/`}><AccountCircle /></Link>
             </IconButton>
@@ -213,7 +213,8 @@ export default function PrimarySearchAppBar() {
       </AppBar>
       {renderMobileMenu}
       
-            {Search?.map( (val) => {
+         <div>
+         {Search?.map( (val) => {
                 return(
                   <div style={{display:"inline-flex"}}>
                     
@@ -234,6 +235,7 @@ export default function PrimarySearchAppBar() {
                   </div>
                 )
               })}
+           </div>   
     </div>
   );
 }
