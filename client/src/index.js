@@ -14,7 +14,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import PrivateRoute from './components/PrivateRoute'
 
 ReactDOM.render(
   <BrowserRouter>
@@ -27,7 +27,9 @@ ReactDOM.render(
     <Route path='/users/password/forget' exact render={props => <ForgetPassword {...props} />} />
     <Route path='/users/password/reset/:token' exact render={props => <ResetPassword {...props} />} />
 
-    <Route path='/'  render={props => <App {...props} />} />
+    {/* <Route path='/'  render={props => <App {...props} />} /> */}
+    <PrivateRoute exact path='/'  component={App} />
+
     </Switch>
   </BrowserRouter>,
   document.getElementById('root')
