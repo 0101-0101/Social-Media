@@ -11,10 +11,17 @@ import ForgetPassword from './auth/ForgetPassword';
 import ResetPassword from './auth/ResetPassword';
 
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect, Switch  } from 'react-router-dom';
+import Home from './components/Home';
+import Profile from './components/user/Profile';
+import Messenger from './components/messenger/Messenger';
+import Search from './components/user/Search';
+
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PrivateRoute from './components/PrivateRoute'
+
+
 
 ReactDOM.render(
   <BrowserRouter>
@@ -22,13 +29,20 @@ ReactDOM.render(
     
     <Route path='/register' exact render={props => <Register {...props} />} />
     <Route path='/users/activate/:token' exact render={props => <Activate {...props} />} />
-    <Route path='/login' exact render={props => <Login {...props} />} />
+    {/* <Route path='/login' exact render={props => <Login {...props} />} /> */}
+    <Route path='/login' exact component={Login} />
 
     <Route path='/users/password/forget' exact render={props => <ForgetPassword {...props} />} />
     <Route path='/users/password/reset/:token' exact render={props => <ResetPassword {...props} />} />
 
     {/* <Route path='/'  render={props => <App {...props} />} /> */}
-    <PrivateRoute exact path='/'  component={App} />
+    <Route path='/profile/:userId/'  component={Profile}></Route>
+    <Route path='/messenger' component={Messenger}></Route>
+    <Route path='/search' component={Search}></Route>
+
+    <Route path='/' exact component={Home}></Route>
+
+    {/* <PrivateRoute path='/' exact component={App} /> */}
 
     </Switch>
   </BrowserRouter>,

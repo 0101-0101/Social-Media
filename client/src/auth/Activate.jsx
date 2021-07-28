@@ -1,35 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import authSvg from '../assests/welcome.svg';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { authenticate, isAuth } from '../helpers/auth';
 import { Link, Redirect } from 'react-router-dom';
 
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+
+import Button from '@material-ui/core/Button';
+
+
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}));
+
+
 const Activate = ({ match }) => {
+
+  const classes = useStyles();
+
   const [formData, setFormData] = useState({
     name: '',
     token: '',
     show: true
   });
 
-  useEffect(() => {
-    let token = match.params.token;
-    let { name } = jwt.decode(token);
+  // useEffect(() => {
+  //   let token = match.params.token;
+  //   let { name } = jwt.decode(token);
 
-    if (token) {
-      setFormData({ ...formData, name, token });
-    }
+  //   if (token) {
+  //     setFormData({ ...formData, name, token });
+  //   }
 
-    console.log(token, name);
-  }, [match.params]);
+  //   console.log(token, name);
+  // }, [match.params]);
+
   const { name, token, show } = formData;
 
   const handleSubmit = e => {
     e.preventDefault();
 
     axios
-    
       // .post(`${process.env.REACT_APP_API_URL}/activation`, {
       .post(`http://localhost:5000/api/activation`, {
 
@@ -40,8 +70,9 @@ const Activate = ({ match }) => {
           ...formData,
           show: false
         });
-
+        
         toast.success(res.data.message);
+        <Redirect to='/login' />
       })
       .catch(err => {
         
@@ -50,58 +81,50 @@ const Activate = ({ match }) => {
   };
 
   return (
-    <div className='min-h-screen bg-gray-100 text-gray-900 flex justify-center'>
-      {isAuth() ? <Redirect to='/' /> : null}
-      <ToastContainer />
-      <div className='max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1'>
-        <div className='lg:w-1/2 xl:w-5/12 p-6 sm:p-12'>
-          <div className='mt-12 flex flex-col items-center'>
-            <h1 className='text-2xl xl:text-3xl font-extrabold'>
-              Welcome {name}
-            </h1>
+    <Container component="main" maxWidth="xs">
+       {isAuth() ? <Redirect to='/' /> : null}
+       <ToastContainer />
+       <div className={classes.paper}>
 
-            <form
-              className='w-full flex-1 mt-8 text-indigo-500'
-              onSubmit={handleSubmit}
-            >
-              <div className='mx-auto max-w-xs relative '>
-                <button
-                  type='submit'
-                  className='mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none'
-                >
-                  <i className='fas fa-user-plus fa 1x w-6  -ml-2' />
-                  <span className='ml-3'>Activate your Account</span>
-                </button>
-              </div>
-              <div className='my-12 border-b text-center'>
-                <div className='leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2'>
-                  Or sign up again
-                </div>
-              </div>
-              <div className='flex flex-col items-center'>
-                <a
-                  className='w-full max-w-xs font-bold shadow-sm rounded-lg py-3
-           bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5'
-                  href='/register'
-                  target='_self'
-                >
-                  <i className='fas fa-sign-in-alt fa 1x w-6  -ml-2 text-indigo-500' />
-                  <span className='ml-4'>Sign Up</span>
-                </a>
-              </div>
-            </form>
-          </div>
+        {/* <Typography component="h1" variant="h5">
+        Welcome {name}
+        </Typography> */}
+
+        <form className={classes.form} onSubmit={handleSubmit}>
+
+        {/* <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Activate your Account
+          </Button> */}
+          
+          <div className="text-center">
+            <h1 >Hey {name}, Ready to activate your account?</h1>
+
+            <Button
+            type="submit"
+            margin="normal"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Activate Account
+          </Button>
+
         </div>
-        <div className='flex-1 bg-indigo-100 text-center hidden lg:flex'>
-          <div
-            className='m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat'
-            style={{ backgroundImage: `url(${authSvg})` }}
-          ></div>
+        </form>
         </div>
-      </div>
-      ;
-    </div>
-  );
+      
+
+    </Container>
+  )
+
+
 };
 
 export default Activate;

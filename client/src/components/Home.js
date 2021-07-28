@@ -1,4 +1,3 @@
-import { useHistory } from "react-router-dom";
 import  { useForm} from 'react-hook-form'
 import Axios from 'axios'
 import { useState, useEffect } from "react";
@@ -23,6 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import ShareIcon from '@material-ui/icons/Share';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Navbar from './Navbar'
 
 import PrimarySearchAppBar from "./Navbar";
 import Paper from '@material-ui/core/Paper';
@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
-function Home() {
+function Home({ history }) {
   const userId =  JSON.parse(localStorage.getItem('user'))
 
   const classes = useStyles();
@@ -95,8 +95,8 @@ function Home() {
   const [user_list, setuser] = useState([])
   const [search, setsearch] = useState()
 
-  // var current_user = user_list.filter((val) => val._id == userId._id)
-  // console.log("current_user",current_user)
+  var current_user = user_list.filter((val) => val._id == userId._id)
+  // console.("current_user",current_user)
 
   const adddata = (values) =>{
     console.log("Added Values",values);
@@ -246,8 +246,10 @@ function Home() {
     }
     return (
         <div >
+          { current_user? <Navbar current_user={current_user}/> : null}
+          
         {/* <div style={{width:"600px",margin: "0 auto"}}> */}
-
+        
 
         <Grid container spacing={3}>
 
@@ -371,7 +373,7 @@ function Home() {
             
               {user_list.map( (val) => {
                 // console.log(val.following,val._id);
-                var current_user = user_list.filter((val) => val._id == userId._id)
+                // let current_user = user_list.filter((val) => val._id == userId._id)
                 console.log("current_user",current_user)
                 console.log(current_user[0].following.map((val) => val._id));
                 const user_follow = current_user[0].following.map((val) => val._id)

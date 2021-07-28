@@ -1,8 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import authSvg from '../assests/reset.svg';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
+
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}));
+
+
 const ResetPassword = ({match}) => {
+
+  const classes = useStyles();
+
   const [formData, setFormData] = useState({
       password1: '',
       password2: '',
@@ -51,55 +84,59 @@ const ResetPassword = ({match}) => {
       toast.error('Passwords don\'t matches');
     }
   };
+
+
+
   return (
-    <div className='min-h-screen bg-gray-100 text-gray-900 flex justify-center'>
+    <Container component="main" maxWidth="xs">
+      {/* <CssBaseline /> */}
       <ToastContainer />
-      <div className='max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1'>
-        <div className='lg:w-1/2 xl:w-5/12 p-6 sm:p-12'>
-          <div className='mt-12 flex flex-col items-center'>
-            <h1 className='text-2xl xl:text-3xl font-extrabold'>
-              Reset Your Password
-            </h1>
-            <div className='w-full flex-1 mt-8 text-indigo-500'>
-              
-              <form
-                className='mx-auto max-w-xs relative '
-                onSubmit={handleSubmit}
-              >
-                <input
-                  className='w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white'
-                  type='password'
-                  placeholder='password'
-                  onChange={handleChange('password1')}
-                  value={password1}
-                  />
-                  <input
-                  className='w-full mt-5 px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white'
-                  type='password'
-                  placeholder='Confirm password'
-                  onChange={handleChange('password2')}
-                  value={password2}
-                />
-                <button
-                  type='submit'
-                  className='mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none'
-                >
-                  <i className='fas fa-sign-in-alt  w-6  -ml-2' />
-                  <span className='ml-3'>Submit</span>
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-        <div className='flex-1 bg-indigo-100 text-center hidden lg:flex'>
-          <div
-            className='m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat'
-            style={{ backgroundImage: `url(${authSvg})` }}
-          ></div>
-        </div>
+
+      <div className={classes.paper}>
+
+        <Typography component="h1" variant="h5">
+        Reset Your Password
+        </Typography>
+        <form className={classes.form} onSubmit={handleSubmit}>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            label="Password"
+            type="password"
+            id="password1"
+            onChange={handleChange('password1')}
+            value={password1}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            label="Confirm Password"
+            type="password"
+            id="password2"
+            onChange={handleChange('password2')}
+            value={password2}
+          />
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Submit
+          </Button>
+
+        </form>
       </div>
-      ;
-    </div>
+      <Box mt={8}>
+        {/* <Copyright /> */}
+      </Box>
+    </Container>
   );
 };
 

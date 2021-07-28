@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import authSvg from '../assests/login.svg';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import { authenticate, isAuth } from '../helpers/auth';
@@ -7,7 +6,44 @@ import { Link, Redirect } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
 // import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+// import Link from '@material-ui/core/Link';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}));
+
+
 const Login = ({ history }) => {
+  const classes = useStyles();
   const [formData, setFormData] = useState({
     email: '',
     password1: '',
@@ -87,115 +123,86 @@ const Login = ({ history }) => {
       toast.error('Please fill all fields');
     }
   };
+
+
   return (
-    <div className='min-h-screen bg-gray-100 text-gray-900 flex justify-center'>
-      {isAuth() ? <Redirect to='/' /> : null}
+    <Container component="main" maxWidth="xs">
+      {isAuth() ? <Redirect to='/' /> : <Redirect to='/login' />}
       <ToastContainer />
-      <div className='max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1'>
-        <div className='lg:w-1/2 xl:w-5/12 p-6 sm:p-12'>
-          <div className='mt-12 flex flex-col items-center'>
-            <h1 className='text-2xl xl:text-3xl font-extrabold'>
-              Sign In Form
-            </h1>
-            <div className='w-full flex-1 mt-8 text-indigo-500'>
-              <div className='flex flex-col items-center'>
-                <GoogleLogin
-                  // clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}
-                  clientId={`628487823785-4j4a4685esvhm1fn3q6giao76cpq3jn6.apps.googleusercontent.com`}
-                  onSuccess={responseGoogle}
-                  onFailure={responseGoogle}
-                  cookiePolicy={'single_host_origin'}
-                  render={renderProps => (
-                    <button
-                      onClick={renderProps.onClick}
-                      disabled={renderProps.disabled}
-                      className='w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline'
-                    >
-                      <div className=' p-2 rounded-full '>
-                        <i className='fab fa-google ' />
-                      </div>
-                      <span className='ml-4'>Sign In with Google</span>
-                    </button>
-                  )}
-                ></GoogleLogin>
-
-                {/* <FacebookLogin
-                  appId={`${process.env.REACT_APP_FACEBOOK_CLIENT}`}
-                  autoLoad={false}
-                  callback={responseFacebook}
-                  render={renderProps => (
-                    <button
-                      onClick={renderProps.onClick}
-                      className='w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5'
-                    >
-                      <div className=' p-2 rounded-full '>
-                        <i className='fab fa-facebook' />
-                      </div>
-                      <span className='ml-4'>Sign In with Facebook</span>
-                    </button>
-                  )}
-                /> */}
-
-                <a
-                  className='w-full max-w-xs font-bold shadow-sm rounded-lg py-3
-           bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5'
-                  href='/register'
-                  target='_self'
-                >
-                  <i className='fas fa-user-plus fa 1x w-6  -ml-2 text-indigo-500' />
-                  <span className='ml-4'>Sign Up</span>
-                </a>
-              </div>
-              <div className='my-12 border-b text-center'>
-                <div className='leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2'>
-                  Or sign In with e-mail
-                </div>
-              </div>
-              <form
-                className='mx-auto max-w-xs relative '
-                onSubmit={handleSubmit}
-              >
-                <input
-                  className='w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white'
-                  type='email'
-                  placeholder='Email'
-                  onChange={handleChange('email')}
-                  value={email}
-                />
-                <input
-                  className='w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5'
-                  type='password'
-                  placeholder='Password'
-                  onChange={handleChange('password1')}
-                  value={password1}
-                />
-                <button
-                  type='submit'
-                  className='mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none'
-                >
-                  <i className='fas fa-sign-in-alt  w-6  -ml-2' />
-                  <span className='ml-3'>Sign In</span>
-                </button>
-                <Link
-                  to='/users/password/forget'
-                  className='no-underline hover:underline text-indigo-500 text-md text-right absolute right-0  mt-2'
-                >
-                  Forget password?
-                </Link>
-              </form>
-            </div>
+      <CssBaseline />
+      <div className={classes.paper} onSubmit={handleSubmit}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
+        <form className={classes.form} noValidate>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            type='email'
+            autoFocus
+            onChange={handleChange('email')}
+            value={email}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            onChange={handleChange('password1')}
+            value={password1}
+          />
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Sign In
+          </Button>
+          <Grid container>
+            <Grid item xs>
+              <Link to='/users/password/forget' variant="body2">
+                Forgot password?
+              </Link>
+            </Grid>
+            <Grid item>
+              <Link to='/register' variant="body2">
+                {"Don't have an account? Sign Up"}
+              </Link>
+            </Grid>
+          </Grid>
+        </form>
+        <div style={{margin:"40px"}}>
+        <GoogleLogin
+            clientId={`628487823785-4j4a4685esvhm1fn3q6giao76cpq3jn6.apps.googleusercontent.com`}
+            buttonText="Login"
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy={'single_host_origin'}
+          />
           </div>
-        </div>
-        <div className='flex-1 bg-indigo-100 text-center hidden lg:flex'>
-          <div
-            className='m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat'
-            style={{ backgroundImage: `url(${authSvg})` }}
-          ></div>
-        </div>
       </div>
-      ;
-    </div>
+    </Container>
   );
+
 };
 
 export default Login;

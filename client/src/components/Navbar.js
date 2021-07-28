@@ -20,8 +20,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import  {follow}  from './api-user'
 import Button from '@material-ui/core/Button';
 
+import { Redirect , useHistory} from "react-router-dom";
 
 import { Link } from 'react-router-dom';
+import { signout } from '../helpers/auth';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -93,12 +95,23 @@ const useStyles = makeStyles((theme) => ({
 const SearchContext = React.createContext();
 
 
-export default function PrimarySearchAppBar() {
+export default function PrimarySearchAppBar(props) {
+  let history = useHistory()
+
   const [Search, setSearch] = useState()
   const userId =  JSON.parse(localStorage.getItem('user'))
 
 
   const classes = useStyles();
+
+  function user_logout(){
+  //   () =>  signout(() => { <Redirect 
+  //     to={{ pathname: '/login' }} />
+  //  })  
+
+    signout();
+    return <Redirect to='/login' />
+  }
 
   function searchProduct(e){
     e.preventDefault()
@@ -188,24 +201,44 @@ export default function PrimarySearchAppBar() {
               inputProps={{ 'aria-label': 'search' }}
             />
           </div>
+          
           <div className={classes.grow} />
+           <Button variant="outlined" color="primary" 
+           onClick= { () =>  signout(() => { history.push('/login')} ) } >
+              logout
+            </Button>
+
+            {/* <Button variant="outlined" color="primary" 
+           onClick= {() => user_logout() }>
+
+
+              logout
+            </Button> */}
           <div className={classes.sectionDesktop}>
+          
             <IconButton aria-label="show 4 new mails" color="primary">
-              <Badge badgeContent={4} color="secondary" >      
+              {/* <Badge badgeContent={4} color="secondary" >       */}
                 <Link to='/messenger'style={{ textDecoration: 'none' }}> <MailIcon /> </Link>
-              </Badge>
+              {/* </Badge> */}
             </IconButton>
             <IconButton aria-label="show 17 new notifications" color="primary">
-              <Badge badgeContent={17} color="secondary" >
+              {/* <Badge badgeContent={17} color="secondary" > */}
               <Link to='/'style={{ textDecoration: 'none' }}> <NotificationsIcon /> </Link>
-              </Badge>
+              {/* </Badge> */}
             </IconButton>
           
             <IconButton
 
               // onClick={handleProfileMenuOpen}
             >
-            <Link to={`/profile/${userId._id}/`}><AccountCircle /></Link>
+              {console.log(props.current_user)}
+              { props.current_user[0] ?  
+              <Link to={`/profile/${userId._id}/`}>
+              <Avatar  alt="Remy Sharp" src={`http://localhost:5000/${props.current_user[0].profile_pic}`} >
+           </Avatar>
+           </Link>
+            : null}
+            {/* <Link to={`/profile/${userId._id}/`}><AccountCircle /></Link> */}
             </IconButton>
           </div>
 
