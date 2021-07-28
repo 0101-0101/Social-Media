@@ -231,7 +231,7 @@ export default function PrimarySearchAppBar(props) {
 
               // onClick={handleProfileMenuOpen}
             >
-              {console.log(props.current_user)}
+              {/* {console.log(props.current_user)} */}
               { props.current_user[0] ?  
               <Link to={`/profile/${userId._id}/`}>
               <Avatar  alt="Remy Sharp" src={`http://localhost:5000/${props.current_user[0].profile_pic}`} >

@@ -166,7 +166,8 @@ function Profile(param) {
           <Paper className={classes.paper}>
           <Avatar className={classes.large} alt="Remy Sharp" src={`http://localhost:5000/${data.pp}`} >
           </Avatar>
-          <input type="file" onChange={ changePic } name="photo"/>
+         {userId==  JSON.parse(localStorage.getItem('user'))._id
+? <input type="file" onChange={ changePic } name="photo"/> : null} 
 
           
 
@@ -195,7 +196,7 @@ function Profile(param) {
               alt="User Post"
               // height="140"
               image={`http://localhost:5000/${val.photo}`}
-              title="Contemplative Reptile"
+              // title="Contemplative Reptile"
             />
           </CardActionArea>
         </Card>

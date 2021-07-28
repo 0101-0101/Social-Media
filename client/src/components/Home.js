@@ -108,7 +108,7 @@ function Home({ history }) {
             [] Bracket return array
 
         */
-        const newTasks = [{_id:values._id,text:values.text,photo:values.photo,comments:[]} ,...data ]
+        const newTasks = [{_id:values._id,text:values.text,photo:values.photo,comments:[],likes:[]} ,...data ]
 
 
     setdata(newTasks);
@@ -156,7 +156,7 @@ function Home({ history }) {
     fetch('http://localhost:5000/api/posts/upload')
       .then(response => response.json())
       .then( product => {
-          // console.log("product.data",product.data)
+          console.log("product.data",product.data)
           setdata(product.data.reverse())
       })
   }, [])
