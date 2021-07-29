@@ -72,10 +72,13 @@ const Login = ({ history }) => {
 
   const informParent = response => {
     authenticate(response, () => {
-      isAuth() && isAuth().role === 'admin'
-        ? history.push('/admin')
-        : history.push('/private');
-    });
+        history.push('/')
+    })
+    // authenticate(response, () => {
+    //   isAuth() && isAuth().role === 'admin'
+    //     ? history.push('/admin')
+    //     : history.push('/private');
+    // });
   };
 
   const responseGoogle = response => {
@@ -110,12 +113,13 @@ const Login = ({ history }) => {
           });
         })
         .catch(err => {
-          setFormData({
-            ...formData,
-            email: '',
-            password1: '',
-            textChange: 'Sign In'
-          });
+          // setFormData({
+          //   ...formData,
+          //   email: '',
+          //   password1: '',
+          //   textChange: 'Sign In'
+          // });
+
           console.log(err.response);
           toast.error(err.response.data.errors);
         });
@@ -137,16 +141,16 @@ const Login = ({ history }) => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form}>
           <TextField
             variant="outlined"
+            type='email'
             margin="normal"
             required
             fullWidth
             id="email"
             label="Email Address"
             name="email"
-            type='email'
             autoFocus
             onChange={handleChange('email')}
             value={email}
@@ -206,3 +210,4 @@ const Login = ({ history }) => {
 };
 
 export default Login;
+

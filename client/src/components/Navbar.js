@@ -227,19 +227,19 @@ export default function PrimarySearchAppBar(props) {
               {/* </Badge> */}
             </IconButton>
           
-            <IconButton
+            <IconButton>
 
-              // onClick={handleProfileMenuOpen}
-            >
-              {/* {console.log(props.current_user)} */}
-              { props.current_user[0] ?  
+              {/* { props.current_user[0] ?  
               <Link to={`/profile/${userId._id}/`}>
-              <Avatar  alt="Remy Sharp" src={`http://localhost:5000/${props.current_user[0].profile_pic}`} >
-           </Avatar>
-           </Link>
-            : null}
-            {/* <Link to={`/profile/${userId._id}/`}><AccountCircle /></Link> */}
+                <Avatar  alt="Remy Sharp" src={`http://localhost:5000/${props.current_user[0].profile_pic}`} >
+                </Avatar>
+              </Link>
+                : null} */}
+
+            <Link to={`/profile/${userId._id}/`}><AccountCircle /></Link>
+
             </IconButton>
+
           </div>
 
         </Toolbar>

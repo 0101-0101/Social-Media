@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const ForgetPassword = ({history}) => {
+const ForgetPassword = () => {
 
   const classes = useStyles();
 
@@ -49,28 +49,26 @@ const ForgetPassword = ({history}) => {
     setFormData({ ...formData, [text]: e.target.value });
   };
   const handleSubmit = e => {
-    // console.log(formData)
+    console.log(formData)
     e.preventDefault();
+
     if (email) {
       setFormData({ ...formData, textChange: 'Submitting' });
-      axios
-        // .put(`${process.env.REACT_APP_API_URL}/forgotpassword`, {
-        .put(`http://localhost:5000/api/forgotpassword`, {
-          email
-        })
-        .then(res => {
+
+      // .put(`${process.env.REACT_APP_API_URL}/forgotpassword`, {
+      axios.put(`http://localhost:5000/api/forgotpassword`, { email })
+        .then(() => {
           toast.success(`Please check your email`);
             setFormData({
               ...formData,
-              email: '',
+              epreventDefaultmail: '',
             });
-            
-          
         })
         .catch(err => {
         console.log(err.response)
           toast.error(err.response.data.error);
         });
+
     } else {
       toast.error('Please fill all fields');
     }

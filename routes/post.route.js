@@ -13,6 +13,7 @@ const {user_post ,
           uncomment,
           remove,
          listByUser,
+         listNewsFeed,
          postByID } = require('../controllers/post.controller')
 
 const { userByID } =require('../controllers/user.controller')
@@ -27,7 +28,8 @@ var storage = multer.diskStorage({
 })
 var upload = multer({storage: storage}); 
 
-router.get('/api/posts/upload', get_post )
+// .get('/api/posts/upload', get_post )
+router.get('/api/posts/feed/:userId', listNewsFeed )
       .post('/api/posts/upload/:userId', upload.single('photo'),  function(req, res){
           user_post(req,res)
         })

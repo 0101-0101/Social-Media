@@ -56,6 +56,24 @@ exports.remove = (req, res) => {
 }
 }
 
+exports.listNewsFeed = (req, res) => {
+  let following = req.profile.following
+  following.push(req.profile._id)
+  Post.find({postedBy: { $in : req.profile.following } })
+  .populate('comments', 'text created')
+  .populate('comments.postedBy', '_id name')
+  .populate('postedBy', '_id name')
+  .sort('-created')
+  .exec((err, posts) => {
+    if (err) {
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+    res.json(posts)
+  })
+}
+
 exports.addFollower = (req, res) => {
     User.findByIdAndUpdate(req.body.followId, {$push: {followers: req.body.userId}}, {new: true})
     .populate('following', '_id name')

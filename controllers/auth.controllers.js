@@ -1,6 +1,13 @@
-const jwt = require('jsonwebtoken');
+/*
+“the data received from client-side shouldn’t be blindly trusted.”
+ */
 const { validationResult } = require('express-validator')
+
+const jwt = require('jsonwebtoken');
+
+
 const nodemailer = require('nodemailer');
+
 const _ = require('lodash');
 
 const { OAuth2Client } = require('google-auth-library');
@@ -19,13 +26,14 @@ exports.registerController = (req,res) => {
 
     if (!errors.isEmpty()){
         const firstError = errors.array().map(error => error.msg)[0];
+        // 422 Unprocessable Entity:The request was well-formed but was unable to be followed due to semantic errors.
         return res.status(422).json({
             errors : firstError
         })
     } else{
         User.findOne({
             email
-        }).exec((err,user) => {
+        }).exec((err,user) => {    //Executes the query , callback(error, result)
             if (user){
                 return res.status(400).json({
                     errors: 'Email is taken'
@@ -54,6 +62,10 @@ exports.registerController = (req,res) => {
         //   }
         // });
 
+        /* 
+        jwt.sign(payload, secretOrPrivateKey, [options, callback])
+
+        */
         const token = jwt.sign(
             {
                 name,email,password
@@ -170,7 +182,7 @@ exports.activationController = (req, res) => {
             errors: 'User with that email does not exist. Please signup'
           });
         }
-        // authenticate
+        // authenticate User using User Model Method
         if (!user.authenticate(password)) {
           return res.status(400).json({
             errors: 'Email and password do not match'
@@ -211,17 +223,13 @@ exports.activationController = (req, res) => {
         errors: firstError
       });
     } else {
-      User.findOne(
-        {
-          email
-        },
-        (err, user) => {
+      User.findOne({ email }, (err, user) => {   //Here we use callback insted of .exec()
           if (err || !user) {
             return res.status(400).json({
               error: 'User with that email does not exist'
             });
           }
-  
+          console.log(user)
           const token = jwt.sign(
             {
               _id: user._id
@@ -254,11 +262,7 @@ exports.activationController = (req, res) => {
             refreshToken: process.env.YOUR_REFRESH_TOKEN,
         };
   
-          return user.updateOne(
-            {
-              resetPasswordLink: token
-            },
-            (err, success) => {
+          return user.updateOne( { resetPasswordLink: token }, (err, success) => {
               if (err) {
                 console.log('RESET PASSWORD LINK ERROR', err);
                 return res.status(400).json({
@@ -281,7 +285,7 @@ exports.activationController = (req, res) => {
                   } else {
                       console.log(JSON.stringify(res));
                       return res.json({
-                        message: `Email has been sent to ${email}. Follow the instruction to activate your account`
+                        message: `Email has been sent to ${email}. Follow the instruction to reset password of your account`
                       });
                   }
               });
@@ -308,19 +312,13 @@ exports.activationController = (req, res) => {
       if (resetPasswordLink) {
         jwt.verify(resetPasswordLink, process.env.JWT_RESET_PASSWORD, function(
           err,
-          decoded
+          decodedupdatedFields
         ) {
           if (err) {
             return res.status(400).json({
               error: 'Expired link. Try again'
             });
           }
-          
-          console.log("user", User.findOne(
-            {
-              resetPasswordLink
-            })
-          )
 
           User.findOne(
             {
@@ -337,9 +335,9 @@ exports.activationController = (req, res) => {
                 password: newPassword,
                 resetPasswordLink: ''
               };
-              console.log("Before Loadas:",user);
-              user = _.extend(user, updatedFields);
-              console.log("After Loadas",user);
+              // console.log('Updated User',user.updateOne({ _id : user._id},updatedFields))
+              //  _.extend return an object containing property field from both Fields
+              user = _.extend(user, updatedFields);  
               user.save((err, result) => {
                 if (err) {
                   return res.status(400).json({

@@ -28,6 +28,10 @@ import PrimarySearchAppBar from "./Navbar";
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
+import { authenticate, isAuth } from '../helpers/auth';
+import { Link, Redirect } from 'react-router-dom';
+
+
 // import Divider from 'material-ui/Divider'
 
 import Comments from "./post/Comments";
@@ -39,7 +43,6 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import AddCommentIcon from '@material-ui/icons/AddComment';
-import { Link } from 'react-router-dom'
 
 import { like,unlike,remove } from './post/api-post'
 
@@ -86,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
-function Home({ history }) {
+function Home() {
   const userId =  JSON.parse(localStorage.getItem('user'))
 
   const classes = useStyles();
@@ -101,8 +104,6 @@ function Home({ history }) {
   const adddata = (values) =>{
     console.log("Added Values",values);
     console.log("photo",`http://localhost:5000/${values.photo}`);
-
-
         /* 
             Be Careful
             [] Bracket return array
@@ -153,11 +154,11 @@ function Home({ history }) {
   }
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/posts/upload')
+    fetch(`http://localhost:5000/api/posts/feed/${userId._id}`)
       .then(response => response.json())
       .then( product => {
-          console.log("product.data",product.data)
-          setdata(product.data.reverse())
+          // console.log("product.data",product)
+          setdata(product)
       })
   }, [])
 
@@ -247,6 +248,7 @@ function Home({ history }) {
     return (
         <div >
           { current_user? <Navbar current_user={current_user}/> : null}
+          {isAuth() ? <Redirect to='/' /> : <Redirect to='/login' />}
           
         {/* <div style={{width:"600px",margin: "0 auto"}}> */}
         
@@ -279,7 +281,8 @@ function Home({ history }) {
       </Button>
       </form>
 
-      { data.map( (pro) =>{
+      { data.length > 0 ? data.map( (pro) =>{
+        // console.log(pro)
         
       // { data.reverse().map( (pro) =>{
 
@@ -343,7 +346,7 @@ function Home({ history }) {
         </IconButton>
 
 
-        { userId._id == pro.postedBy &&
+        { userId._id == pro.postedBy._id &&
         <IconButton>
         <DeleteIcon onClick= { () => deletePost(pro._id)}/>
         {/* <DeleteIcon onClick={ () => deleteComment(post_id,item._id)}/> */}
@@ -361,7 +364,15 @@ function Home({ history }) {
        )
        
     
-      })}
+      })
+    
+    :
+    <div>
+      <h2>No Post to Show</h2>
+      <p>Please Follow Other to view Post </p>
+      </div>
+    
+    }
 
           </Paper>
         </Grid>

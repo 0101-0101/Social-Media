@@ -167,7 +167,7 @@ function Profile(param) {
           <Avatar className={classes.large} alt="Remy Sharp" src={`http://localhost:5000/${data.pp}`} >
           </Avatar>
          {userId==  JSON.parse(localStorage.getItem('user'))._id
-? <input type="file" onChange={ changePic } name="photo"/> : null} 
+          ? <input type="file" onChange={ changePic } name="photo"/> : null} 
 
           
 

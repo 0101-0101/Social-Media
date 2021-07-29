@@ -9,6 +9,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { useHistory } from 'react-router';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 const ResetPassword = ({match}) => {
+  let history = useHistory()
 
   const classes = useStyles();
 
@@ -74,6 +76,7 @@ const ResetPassword = ({match}) => {
               password2: ''
             });
             toast.success(res.data.message);
+            history.push('/login')
           
         })
         .catch(err => {
